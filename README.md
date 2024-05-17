@@ -4,8 +4,8 @@ A brief description of your project, what it does, and why it is useful.
 
 ## Table of Contents
 - [Runing and Compile](#Runing-and-Compile)
-- [EC2 set up and configuration for running Server-side ](#Ec2-set-up-and-configuration-for-running-Server---side )
-- [Local set up and configuration for running Client-side ](#Local-set-up-and-configuration-for-running-Client---side )
+- [EC2 set up and configuration for running Server side ](#Ec2-set-up-and-configuration-for-running-Server-side )
+- [Local set up and configuration for running Client side ](#Local-set-up-and-configuration-for-running-Client-side )
 - [Demo link](#Dome-link)
   
 ## Runing and Compile
@@ -14,7 +14,7 @@ Our application on two sides:
 - Server-side: is running on a cloud platform which is AWS as we use EC2 instances as virtual machines to run the server code on it, these intances do different jobs as one of them are a Master EC2 that communicate with the Client-side directly and when it recieve from the Client-side an image for example, it spilit image and send to Alb to distribute on other EC2 instance while the others are called worker as they are responsible processing image parts then send it back to Master EC2 
 - Client-side: is locally on laptop 
 
-## EC2 set up and configuration
+## EC2 set up and configuration for running Server side 
 
  1. Worker Instance Setup
 
@@ -127,7 +127,7 @@ Default output format [None]: json
 4. NIAM Role for Server Instances
 Ensure that the Server instance has the correct IAM role attached with the necessary permissions to interact with other instances and the Application Load Balancer (ALB). The IAM role should include at least the AmazonEC2RoleforSSM managed policy. This can be done via the AWS Management Console or the AWS CLI.
 
-## Local set up and configuration for running Client-side 
+## Local set up and configuration for running Client side 
 
  Open you windows command line.
 2. Install the required packages using pip:
