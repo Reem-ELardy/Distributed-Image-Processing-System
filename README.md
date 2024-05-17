@@ -120,10 +120,13 @@ aws configure
 ```
 **Note:** Ensure that you replace the AWS Access Key ID and Secret Access Key with your actual credentials. Keep your credentials secure and do not expose them publicly.
 
-AWS Access Key ID [None]: AKIAZQ3DOOXZ232RYEVJ
+{AWS Access Key ID [None]: AKIAZQ3DOOXZ232RYEVJ
+
 AWS Secret Access Key [None]: aEAaa1dru3Bmbtpssjt2DvnpJzcwO95yU3nGFXgd
+
 Default region name [None]: us-west-2
-Default output format [None]: json
+
+Default output format [None]: json}
 
 4. IAM Role for Server Instances
 Ensure that the Server instance has the correct IAM role attached with the necessary permissions to interact with other instances and the Application Load Balancer (ALB). The IAM role should include at least the AmazonEC2RoleforSSM managed policy. This can be done via the AWS Management Console or the AWS CLI.
