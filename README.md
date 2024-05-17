@@ -112,13 +112,14 @@ Open a terminal on your EC2 Server instance and run the following commands:
 
 3. AWS CLI Configuration
 
-After installing AWS CLI on both Worker and Server instances, configure it using the following commands:
+- After installing AWS CLI on both Worker and Server instances, configure it using the following commands:
 
 ```bash
 aws --version
 aws configure
 ```
 **Note:** Ensure that you replace the AWS Access Key ID and Secret Access Key with your actual credentials. Keep your credentials secure and do not expose them publicly.
+
 AWS Access Key ID [None]: AKIAZQ3DOOXZ232RYEVJ
 AWS Secret Access Key [None]: aEAaa1dru3Bmbtpssjt2DvnpJzcwO95yU3nGFXgd
 Default region name [None]: us-west-2
