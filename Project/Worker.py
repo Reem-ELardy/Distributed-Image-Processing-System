@@ -41,6 +41,17 @@ def process_image(image, operation):
         return cv2.bitwise_not(image)
     elif operation == 'blurring':
         return cv2.GaussianBlur(image, (5, 5), 0)
+    elif operation == 'grayscale':
+        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    elif operation == 'thresholding':
+        _, thresholded = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+        return thresholded
+    elif operation == 'dilation':
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        return cv2.dilate(image, kernel, iterations=1)
+    elif operation == 'erosion':
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        return cv2.erode(image, kernel, iterations=1)
     else:
         return None
 
@@ -138,14 +149,3 @@ if __name__ == "__main__":
         app.run(host='0.0.0.0', port=8080)
     else:
         main()
-    #
-    # # Start Flask web server in a separate thread
-    # flask_thread = threading.Thread(target=run_flask_app)
-    # flask_thread.start()
-    #
-    # # Ensure that the worker processes exit cleanly
-    # for i in range(1, size):
-    #     comm.send(None, dest=i, tag=1)
-    #
-    # # Wait for the Flask thread to finish
-    # flask_thread.join()

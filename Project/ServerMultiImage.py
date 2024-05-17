@@ -16,6 +16,7 @@ alb_endpoint1 = "http://distributed-alb-1595764367.eu-west-2.elb.amazonaws.com/p
 alb_endpoint2 = "http://distributed-alb-1595764367.eu-west-2.elb.amazonaws.com/processed"
 
 pathes_to_send_to_user = []
+
 def upload_to_s3(image, bucket_name, key):
     _, encoded_image = cv2.imencode('.jpg', image)
     s3.put_object(Bucket=bucket_name, Key=key, Body=encoded_image.tobytes())
@@ -62,6 +63,8 @@ if __name__ == "__main__":
     context = zmq.Context()
     user_socket = context.socket(zmq.REP)
     user_socket.bind("tcp://0.0.0.0:12345")
+    monitor_socket = context.socket(zmq.PUSH)
+    monitor_socket.bind("tcp://0.0.0.0:12346")
     instance_id_used = []
 
     while True:
@@ -71,32 +74,55 @@ if __name__ == "__main__":
         operation = request.get("operation")
 
         if len(image_paths_received_from_user) > 1:
-            # if len(image_paths_received_from_user) > 4:
-            #     instance_id_used = run.main1(4, run.region_name)
-            # else:
-            #     instance_id_used = run.main1(len(image_paths_received_from_user), run.region_name)
+            if len(image_paths_received_from_user) > 4:
+                instance_id_used = run.main1(4)
+            else:
+                instance_id_used = run.main1(len(image_paths_received_from_user))
+
+            data = {"message": "Instance Started and Registered to the ALB target group with port 8080"}
+            monitor_socket.send_json(data)
 
             image_id = 0
-            for i in range(0, len(image_paths_received_from_user)):
+            for i in range(len(image_paths_received_from_user)):
                 send_image_parts_to_alb(image_paths_received_from_user[i], operation, image_id)
+                data = {"message": "Image is sent to instance and its image processing Started"}
+                monitor_socket.send_json(data)
                 image_id = image_id + 1
             print("All image parts sent successfully.")
+
+            data = {"message": "All Images are sent"}
+            monitor_socket.send_json(data)
+
 
             resulted_image = {}
             for _ in range(len(image_paths_received_from_user)):
                 print("Receiving")
                 process_image_path, image_id = receive_processed_image_parts_from_alb()
+                data = {"message": "Received Image from the instance"}
+                monitor_socket.send_json(data)
                 print("Received image number ", image_id)
                 if process_image_path is not None:
                     resulted_image[image_id] = process_image_path
 
+            data = {"message": "All Images are received"}
+            monitor_socket.send_json(data)
             print("All processed image parts received.")
             sorted_dict = dict(sorted(resulted_image.items()))
             print(type(sorted_dict))
 
             processed_image = list(sorted_dict.values())
+            data = {"message": "Sorting Received Image like it was sent from User"}
+            monitor_socket.send_json(data)
 
-            #run.main2(instance_id_used, run.region_name)
+
+            run.main2(instance_id_used)
+            instance_id_used.clear()
+
+            data = {"message": "Deregister the instance fron the target group and Stoping them"}
+            monitor_socket.send_json(data)
+
+            data = {"message": "Sending back to user"}
+            monitor_socket.send_json(data)
 
             pathes_to_send_to_user = processed_image
             for path in image_paths_received_from_user:
@@ -104,6 +130,7 @@ if __name__ == "__main__":
 
             response_data = {"image": pathes_to_send_to_user}
             user_socket.send_json(response_data)
+            pathes_to_send_to_user.clear()
 
         else:
             # Download the image
@@ -112,40 +139,69 @@ if __name__ == "__main__":
                 print(f"Failed to download image '{image_paths_received_from_user[0]}' from S3.")
                 continue
 
-            #instance_id_used = run.main1(2, run.region_name)
+            instance_id_used = run.main1(2)
 
+            data = {"message": "Instance Started and Registered to the ALB target group with port 8080"}
+            monitor_socket.send_json(data)
+
+            data = {"message": "Start Splitting"}
+            monitor_socket.send_json(data)
             # Splitting the image into parts
             chunk_size = len(image) // size  # Calculate the chunk size
             chunks = [image[i:i + chunk_size] for i in range(0, len(image), chunk_size)]
             print("split is done")
 
+            data = {"message": "Splitting the image is done"}
+            monitor_socket.send_json(data)
+
             image_id = 0
-            for i in range(0, size):
+            for i in range(size):
                 print(f"Sending part{image_id}")
                 image_path = f"part{image_id}.jpg"
                 upload_to_s3(chunks[i], bucket_name, image_path)
                 send_image_parts_to_alb(image_path, operation, image_id)
-                image_id = image_id +1
+
+                data = {"message": f"Image{i} is sent to instance and its image processing Started"}
+                monitor_socket.send_json(data)
+
+                image_id = image_id + 1
             print("All image parts sent successfully.")
+
+            data = {"message": "All Images are sent"}
+            monitor_socket.send_json(data)
 
             # Receiving processed image parts
             processed_chunks = {}
             for _ in range(size):
                 print("Receiving")
                 processed_chunk, image_id = receive_processed_image_parts_from_alb()
+
+                data = {"message": "Received Image from the instance"}
+                monitor_socket.send_json(data)
+
                 print("Received image number ", image_id)
                 if processed_chunk is not None:
                     image = download_from_s3(bucket_name, processed_chunk)
                     processed_chunks[image_id] = image
                     delete_image_from_s3(bucket_name, processed_chunk)
 
+            data = {"message": "All Images are received"}
+            monitor_socket.send_json(data)
+
             print("All processed image parts received.")
             sorted_dict = dict(sorted(processed_chunks.items()))
             print(type(sorted_dict))
 
+            data = {"message": "Sorting Received Image like it was sent from User"}
+            monitor_socket.send_json(data)
+
             processed_chunks = list(sorted_dict.values())
 
-            #run.main2(instance_id_used, run.region_name)
+            run.main2(instance_id_used)
+            instance_id_used.clear()
+
+            data = {"message": "Deregister the instance fron the target group and Stoping them"}
+            monitor_socket.send_json(data)
 
             # Merge processed chunks into the final processed image
             processed_image = np.concatenate(processed_chunks)
@@ -157,13 +213,20 @@ if __name__ == "__main__":
             key = 'processed_image.jpg'
             upload_to_s3(processed_image, bucket_name, key)
             print(f"Processed image uploaded to S3 bucket '{bucket_name}' with key '{key}'")
+
+            data = {"message": "Sending back to user"}
+            monitor_socket.send_json(data)
+
             pathes_to_send_to_user.append(key)
             response_data = {"image": pathes_to_send_to_user}
             user_socket.send_json(response_data)
+            pathes_to_send_to_user.clear()
+
 
         complete = input("Do you want to process any other images? (Y or N): ")
         if complete.upper() == 'N':
             user_socket.close()
+            monitor_socket.close()
             print("User Socket Closed")
             sys.exit()
         else:
