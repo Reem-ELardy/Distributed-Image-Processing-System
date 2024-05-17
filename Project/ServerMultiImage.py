@@ -56,7 +56,7 @@ def receive_processed_image_parts_from_alb():
         return processed_part_path, image_id
     else:
         print("Failed to receive processed image parts from ALB.")
-        return None, None
+        return receive_processed_image_parts_from_alb()
 
 
 if __name__ == "__main__":

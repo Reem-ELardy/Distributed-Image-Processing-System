@@ -126,7 +126,7 @@ def main1(num):
     try:
         for i in range(num):
             start_instance(instance_ids[i])
-            send_commands(instance_ids[i], user_data_script)
+            send_commands(instance_ids[i], user_data_script, region_name)
             instance_id_used.append(instance_ids[i])
         register_instances(target_group_arn, instance_id_used)
         wait_for_registration(target_group_arn, instance_id_used)
