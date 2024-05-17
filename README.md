@@ -52,7 +52,7 @@ Open a terminal on your EC2 Worker instance and run the following commands:
     sudo apt install python3-boto3
     ```
 
-- Install pipx and configure the environment:
+- Install pipx and configure the environment and install awscli:
     ```bash
     sudo apt update
     sudo apt install pipx
@@ -99,7 +99,7 @@ Open a terminal on your EC2 Server instance and run the following commands:
     sudo apt install python3-boto3
     ```
 
-- Install pipx and configure the environment:
+- Install pipx and configure the environment and install awscli:
     ```bash
     sudo apt update
     sudo apt install pipx
@@ -124,14 +124,14 @@ AWS Secret Access Key [None]: aEAaa1dru3Bmbtpssjt2DvnpJzcwO95yU3nGFXgd
 Default region name [None]: us-west-2
 Default output format [None]: json
 
-4. NIAM Role for Server Instances
+4. IAM Role for Server Instances
 Ensure that the Server instance has the correct IAM role attached with the necessary permissions to interact with other instances and the Application Load Balancer (ALB). The IAM role should include at least the AmazonEC2RoleforSSM managed policy. This can be done via the AWS Management Console or the AWS CLI.
 
 ## Local set up and configuration for running Client side 
 
  Open you windows command line and Install the required packages using pip:
 
-    ```bash
+   ```bash
     pip install tk
     pip install customtkinter
     pip install pillow
@@ -140,6 +140,10 @@ Ensure that the Server instance has the correct IAM role attached with the neces
     pip install opencv-python
     pip install numpy
     pip install zmq
-    ```
+   ```
 
 **Note:** Make sure to replace `pip` with `pip3` if you're using Python 3.x.
+
+## Demo link
+
+https://drive.google.com/drive/folders/1dwjvvGwwuBj4uOSF0IZkyO-Krfdmlgq8?usp=sharing
