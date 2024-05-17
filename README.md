@@ -4,8 +4,8 @@ A brief description of your project, what it does, and why it is useful.
 
 ## Table of Contents
 - [Runing and Compile](#Runing-and-Compile)
-- [EC2 set up and configuration for running Server-side ](#Ec2-set-up-and-configuration-for-running-Server--side )
-- [Local set up and configuration for running Client-side ](#Local-set-up-and-configuration-for-running-Client--side )
+- [EC2 set up and configuration for running Server-side ](#Ec2-set-up-and-configuration-for-running-Server---side )
+- [Local set up and configuration for running Client-side ](#Local-set-up-and-configuration-for-running-Client---side )
 - [Demo link](#Dome-link)
   
 ## Runing and Compile
