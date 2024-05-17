@@ -129,8 +129,8 @@ Ensure that the Server instance has the correct IAM role attached with the neces
 
 ## Local set up and configuration for running Client side 
 
- Open you windows command line.
-2. Install the required packages using pip:
+ Open you windows command line and Install the required packages using pip:
+
     ```bash
     pip install tk
     pip install customtkinter
